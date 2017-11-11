@@ -1,0 +1,8 @@
+version: '2'
+services:
+  simple-node:
+    image: pfeilbr/simple-node
+    cpu_shares: 100
+    mem_limit: 262144000
+    ports:
+      - "80:8080"
