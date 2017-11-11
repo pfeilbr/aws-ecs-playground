@@ -8,6 +8,8 @@ learn [AWS ECS](https://aws.amazon.com/documentation/ecs/)
 # configure ecs-cli
 ecs-cli configure profile --profile-name ecs-cluster-01 --access-key <YOUR KEY> --secret-key <YOUR SECRET>
 ecs-cli configure --cluster cluster01 --region us-east-1 --config-name cluster01
+
+# create 1 node cluster
 ecs-cli up --keypair brianpfeil --capability-iam --size 1 --instance-type t2.micro
 
 # create node app
@@ -38,6 +40,14 @@ docker push pfeilbr/simple-node
 
 # make changes to docker-compose.yml if neccessary
 ecs-cli compose up
+
+# scale cluster to 2 nodes
+ecs-cli scale --capability-iam --size 2
+
+# scale simple-node across 2 nodes
+ecs-cli compose scale 2
+
+
 ```
 
 ### Resources
