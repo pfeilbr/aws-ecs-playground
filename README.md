@@ -47,6 +47,11 @@ ecs-cli scale --capability-iam --size 2
 # scale simple-node across 2 nodes
 ecs-cli compose scale 2
 
+# create a service.  defaults to 1 task.
+# if task dies, service will automatically restart it
+# e.g. try /kill path of web app, which calls process.exit(1).  
+# it will start a new container instance within a few seconds
+ecs-cli compose service up
 
 ```
 
@@ -55,3 +60,4 @@ ecs-cli compose scale 2
 * [Installing the Amazon ECS CLI](http://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_CLI_installation.html)
 * [Configuring the Amazon ECS CLI](http://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_CLI_Configuration.html)
 * [Amazon ECS CLI Tutorial](http://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_CLI_tutorial.html)
+* [Dockerizing a Node.js web app](https://nodejs.org/en/docs/guides/nodejs-docker-webapp/)
