@@ -4,6 +4,8 @@ learn [AWS ECS](https://aws.amazon.com/documentation/ecs/)
 
 ### Session Steps
 
+> following steps are based on <http://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_CLI_tutorial.html>
+
 ```sh
 # configure ecs-cli
 ecs-cli configure profile --profile-name ecs-cluster-01 --access-key <YOUR KEY> --secret-key <YOUR SECRET>
