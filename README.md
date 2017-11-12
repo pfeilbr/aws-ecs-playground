@@ -51,13 +51,13 @@ ecs-cli compose scale 2
 # if task dies, service will automatically restart it
 # e.g. try /kill path of web app, which calls process.exit(1).  
 # it will start a new container instance within a few seconds
-ecs-cli compose service up
+ecs-cli compose service up # be sure to run "ecs-cli compose down" first
 
 # delete service
 ecs-cli compose service down
 
 # delete cluster
-ecs-cli compose service up
+ecs-cli down --force
 
 ```
 
