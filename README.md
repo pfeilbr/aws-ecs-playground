@@ -53,6 +53,12 @@ ecs-cli compose scale 2
 # it will start a new container instance within a few seconds
 ecs-cli compose service up
 
+# delete service
+ecs-cli compose service down
+
+# delete cluster
+ecs-cli compose service up
+
 ```
 
 ### Resources
