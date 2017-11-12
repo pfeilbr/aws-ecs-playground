@@ -15,6 +15,8 @@ app.get('/', (req, res) => {
 });
 
 app.get('/s3', (req, res) => {
+    // ensure S3 list is enabled for the role the ec2 instance(s) are running under
+    // e.g. role: amazon-ecs-cli-setup-cluster01-EcsInstanceRole-1EBTYAIQDRV34
     s3.listBuckets(function(err, data) {
         if (err) {
             console.log(err, err.stack);
