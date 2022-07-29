@@ -2,6 +2,8 @@
 
 example ECS Fargate private (vpc only access) load balanced (internal ALB) http service (nginx)
 
+> the ecs tasks run in a priavte subnet(s) that have a public NAT gateway.  this is needed for the ecs agent to pull the container image from public internet
+
 see [`template.yaml`](template.yaml)
 
 ## Demo

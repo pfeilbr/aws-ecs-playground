@@ -9,9 +9,10 @@ Parameters:
     Default: vpc-2708bf40
 
   SubnetIDs:
-    Description: The array of Subnet IDs for the Subnet group
+    Description: The array of private Subnet IDs for the Subnet group
     Type: List<AWS::EC2::Subnet::Id>    
-    Default: subnet-4700526d, subnet-af5052d9
+    Default: subnet-058724041d8b0811a, subnet-0c5df80632215980a
+    # Default: subnet-4700526d, subnet-af5052d9
 
 Globals:
   Function:
@@ -120,7 +121,7 @@ Resources:
         MinimumHealthyPercent: 0
       NetworkConfiguration:
         AwsvpcConfiguration:
-          AssignPublicIp: ENABLED
+          AssignPublicIp: DISABLED
           SecurityGroups:
             - !GetAtt Alb2FargateContainers.GroupId
           Subnets: !Ref SubnetIDs
