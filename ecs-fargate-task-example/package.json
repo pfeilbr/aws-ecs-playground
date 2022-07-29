@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.1184.0",
     "axios": "^0.27.2"
   }
 }
