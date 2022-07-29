@@ -29,3 +29,4 @@ sam delete --no-prompts
 - [mydeveloperplanet/MyAWSPlanet](https://github.com/mydeveloperplanet/MyAWSPlanet) - CloudFormation based on this
 - [nathanpeck/aws-cloudformation-fargate](https://github.com/nathanpeck/aws-cloudformation-fargate)
 - <https://mydeveloperplanet.com/2021/09/07/how-to-deploy-a-spring-boot-app-on-aws-ecs-cluster/>
+- [How can I run an Amazon ECS task on Fargate in a private subnet?](https://aws.amazon.com/premiumsupport/knowledge-center/ecs-fargate-tasks-private-subnet/)
