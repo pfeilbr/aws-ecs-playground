@@ -14,6 +14,9 @@ example using `ecs-cli` to serve simple docker compose nodejs web app
 
 ## Notes
 
+- [Fargate Task CPU and memory](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html#fargate-tasks-size)
+  - min cpu: 256 (.25 vCPU), max cpu: 4096 (4 vCPU)
+  - min mem: 512 MiB, max mem: 30 GB
 - [`AWS::ECS::TaskDefinition.ExecutionRoleArn`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-taskdefinition.html#cfn-ecs-taskdefinition-executionrolearn) - role that grants the Amazon ECS container agent permission to make AWS API calls on your behalf.  For example, permission to pull ECR images and create log streams.  See [Amazon ECS task execution IAM role](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_execution_IAM_role.html).  The `arn:aws:iam::${AWS::AccountId}:role/ecsTaskExecutionRole` role is available by default.
 - [`AWS::ECS::TaskDefinition.TaskRoleArn`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-taskdefinition.html#cfn-ecs-taskdefinition-taskrolearn) - role that grants containers in the task permission to call AWS APIs on your behalf.  e.g. access S3, secrets manager, etc.  See [IAM roles for tasks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-iam-roles.html)
 - [`AWS::ECS::Service.NetworkConfiguration`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-service.html#cfn-ecs-service-networkconfiguration) - required for task definitions that use the awsvpc network mode to receive their own elastic network interface, and it is not supported for other network modes
