@@ -42,7 +42,7 @@ aws ecs run-task \
     --network-configuration "awsvpcConfiguration={subnets=[subnet-058724041d8b0811a],securityGroups=[sg-90433feb]}"
 
 # view task output in CloudWatch logs
-
+aws logs tail "ecs-fargate-task-example-LogGroup-PC3x4F18qpuO"
 
 # delete stack
 sam delete --no-prompts
@@ -55,6 +55,8 @@ ECR Repo
 ![](https://www.evernote.com/l/AAGhi6cu77ZLQpIhHHtSg8lnMkLozngxor8B/image.png)
 
 Task Output in CloudWatch Logs
+
+![](https://www.evernote.com/l/AAHbdsNP_itPPIApV3w8hbtJF1huT0KODe0B/image.png)
 
 ![](https://www.evernote.com/l/AAHrcJS1UNtPfZp2nn58cxFj3iWIk9IC4XUB/image.png)
 
