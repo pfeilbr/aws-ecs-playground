@@ -1,0 +1,11 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "ecs-fargate-task-example"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-13v3pefdyn46p"
+s3_prefix = "ecs-fargate-task-example"
+region = "us-east-1"
+capabilities = "CAPABILITY_IAM"
+disable_rollback = false
+image_repositories = []

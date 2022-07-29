@@ -1,0 +1,142 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  ecs-fargate-task-example
+
+# Parameters:
+#   VpcId:
+#     Type: String
+#     Default: vpc-2708bf40
+
+#   SubnetIDs:
+#     Description: The array of private Subnet IDs for the Subnet group
+#     Type: List<AWS::EC2::Subnet::Id>    
+#     Default: subnet-058724041d8b0811a, subnet-0c5df80632215980a
+#     # Default: subnet-4700526d, subnet-af5052d9
+
+Globals:
+  Function:
+    Timeout: 60
+
+Resources:
+
+  MyRepository: 
+    Type: AWS::ECR::Repository
+    Properties: 
+      RepositoryName: "my-nodejs-task"
+
+  ECSCluster:
+    Type: 'AWS::ECS::Cluster'
+    Properties:
+      ClusterName: MyFargateTaskCluster
+
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+
+  MyTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      RequiresCompatibilities:
+        - "FARGATE"
+      ExecutionRoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/ecsTaskExecutionRole"
+      Cpu: 256
+      Memory: 512
+      NetworkMode: "awsvpc"
+      ContainerDefinitions:
+        - Name: "my-nodejs-task"
+          Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/my-nodejs-task:latest"
+          MemoryReservation: 256
+          Memory: 512
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref AWS::Region
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix: ecs                 
+          PortMappings:
+            - ContainerPort: 80
+              Protocol: tcp
+
+  # FargateAlb:
+  #   Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer'
+  #   Properties:
+  #     Name: FargateAlb
+  #     Subnets: !Ref SubnetIDs
+  #     Type: application
+  #     Scheme: internal
+  #     SecurityGroups:
+  #       - !GetAtt FargateAlbSG.GroupId
+
+  # MyFargateTargetGroup:
+  #   Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
+  #   Properties:
+  #     Name: MyFargateTargetGroup
+  #     VpcId: !Ref VpcId
+  #     Protocol: HTTP
+  #     Port: 80
+  #     HealthCheckPath: /
+  #     TargetType: ip
+
+  # Listener:
+  #   Type: 'AWS::ElasticLoadBalancingV2::Listener'
+  #   Properties:
+  #     DefaultActions:
+  #       - TargetGroupArn: !Ref MyFargateTargetGroup
+  #         Type: forward
+  #     LoadBalancerArn: !Ref FargateAlb
+  #     Port: 80
+  #     Protocol: HTTP
+
+  # FargateAlbSG:
+  #   Type: 'AWS::EC2::SecurityGroup'
+  #   Properties:
+  #     GroupDescription: SG for the Fargate ALB
+  #     GroupName: FargateAlbSG
+  #     VpcId: !Ref VpcId
+  #     SecurityGroupIngress:
+  #       - CidrIp: 0.0.0.0/0
+  #         FromPort: 80
+  #         ToPort: 80
+  #         IpProtocol: tcp
+  #         Description: 'Inbound rule for IPv4 traffic'
+
+  # Alb2FargateContainers:
+  #   Type: 'AWS::EC2::SecurityGroup'
+  #   Properties:
+  #     GroupDescription: SG for traffic between ALB and containers
+  #     GroupName: Alb2FargateContainers
+  #     VpcId: !Ref VpcId
+  #     SecurityGroupIngress:
+  #       - IpProtocol: -1
+  #         SourceSecurityGroupId: !GetAtt FargateAlbSG.GroupId
+  #         Description: 'Inbound rule for all traffic'
+
+  # MyECSService:
+  #   Type: AWS::ECS::Service
+  #   DependsOn:
+  #     - Listener
+  #   Properties:
+  #     LaunchType: FARGATE
+  #     Cluster:
+  #       Ref: "ECSCluster"
+  #     DesiredCount: 2
+  #     TaskDefinition:
+  #       Ref: "MyTaskDefinition"
+  #     DeploymentConfiguration:
+  #       MaximumPercent: 100
+  #       MinimumHealthyPercent: 0
+  #     NetworkConfiguration:
+  #       AwsvpcConfiguration:
+  #         AssignPublicIp: DISABLED
+  #         SecurityGroups:
+  #           - !GetAtt Alb2FargateContainers.GroupId
+  #         Subnets: !Ref SubnetIDs
+  #     LoadBalancers:
+  #       - TargetGroupArn:
+  #           Ref: MyFargateTargetGroup
+  #         ContainerPort: 80
+  #         ContainerName: nginx
+
+Outputs:
+  MyTaskDefinition:
+    Value: !Ref MyTaskDefinition

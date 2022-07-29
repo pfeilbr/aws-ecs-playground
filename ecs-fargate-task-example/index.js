@@ -1,0 +1,1 @@
+console.log('hello from ecs-fargate-task-example')
