@@ -23,6 +23,9 @@ Resources:
     Properties:
       ClusterName: MyFargateCluster
 
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+
   MyTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
@@ -37,6 +40,12 @@ Resources:
           Image: "public.ecr.aws/nginx/nginx:1-alpine-perl"
           MemoryReservation: 256
           Memory: 512
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref AWS::Region
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix: ecs                 
           PortMappings:
             - ContainerPort: 80
               Protocol: tcp
