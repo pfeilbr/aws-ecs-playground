@@ -68,7 +68,7 @@ Resources:
       VpcId: !Ref VpcId
       Protocol: HTTP
       Port: 80
-      HealthCheckPath: /actuator/
+      HealthCheckPath: /
       TargetType: ip
 
   Listener:
