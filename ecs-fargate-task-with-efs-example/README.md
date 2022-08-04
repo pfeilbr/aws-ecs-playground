@@ -21,7 +21,7 @@ image_name="my-nodejs-task-with-efs:latest"
 docker build -t "${image_name}" .
 
 # run image locally
-# todo: ecr.describeRepositories() fails because no aws creds in container
+# todo: fails because local docker doesn't have /mnt dir
 docker run -t -i $image_name
 
 # push image to ecr
