@@ -1,6 +1,7 @@
 # ecs-fargate-task-with-efs-example
 
-example ECS Fargate nodejs task with EFS file share that is manually run
+- example ECS Fargate nodejs task with EFS file share that is manually run
+- based on [aws-samples/drupal-on-ecs-fargate](https://github.com/aws-samples/drupal-on-ecs-fargate)
 
 ## Demo
 
@@ -47,15 +48,13 @@ sam delete --no-prompts
 
 ECR Repo
 
-![](https://www.evernote.com/l/AAGhi6cu77ZLQpIhHHtSg8lnMkLozngxor8B/image.png)
+![](https://www.evernote.com/l/AAFaExgnWCFO3IGIP8geL2k2F1DYzFsKTugB/image.png)
 
 Task Output in CloudWatch Logs
 
-![](https://www.evernote.com/l/AAHbdsNP_itPPIApV3w8hbtJF1huT0KODe0B/image.png)
-
-![](https://www.evernote.com/l/AAHrcJS1UNtPfZp2nn58cxFj3iWIk9IC4XUB/image.png)
+![](https://www.evernote.com/l/AAFa6qRxOTREm5tAgUb5Y1SyYXhMHZLN28wB/image.png)
 
 
 ## Resources
 
-- 
+- [aws-samples/drupal-on-ecs-fargate](https://github.com/aws-samples/drupal-on-ecs-fargate)
