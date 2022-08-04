@@ -1,0 +1,145 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  ecs-fargate-task-example
+
+Parameters:
+
+  VpcId:
+    Type: String
+    Default: vpc-2708bf40
+
+  SubnetID:
+    Description: The subnet id
+    Type: AWS::EC2::Subnet::Id   
+    Default: subnet-058724041d8b0811a
+
+  SecurityGroupIDs:
+    Description: The array of security group ids
+    Type: List<AWS::EC2::SecurityGroup::Id>    
+    Default: sg-90433feb    
+
+Globals:
+  Function:
+    Timeout: 60
+
+Resources:
+
+  MyRepository: 
+    Type: AWS::ECR::Repository
+    Properties: 
+      RepositoryName: "my-nodejs-task-with-efs"
+
+  ECSCluster:
+    Type: 'AWS::ECS::Cluster'
+    Properties:
+      ClusterName: MyFargateTaskWithEfsCluster
+
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+
+  EcsTaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      Policies:
+        - PolicyName: !Sub 'EcsTaskExecutionRole-${AWS::StackName}'
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecr:DescribeRepositories
+                Resource: !Sub "arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/*"
+
+  MyTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      RequiresCompatibilities:
+        - "FARGATE"
+      ExecutionRoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/ecsTaskExecutionRole"
+      Cpu: 256
+      Memory: 512
+      NetworkMode: "awsvpc"
+      TaskRoleArn: !Ref EcsTaskExecutionRole
+      ContainerDefinitions:
+        - Name: "my-nodejs-task-with-efs"
+          Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/my-nodejs-task-with-efs:latest"
+          MemoryReservation: 256
+          Memory: 512
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref AWS::Region
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix: ecs
+          MountPoints:
+            - 
+              ContainerPath: "/mnt"
+              SourceVolume: "myefs"           
+          PortMappings:
+            - ContainerPort: 80
+              Protocol: tcp
+      Volumes:
+        - 
+          Name: myefs
+          EFSVolumeConfiguration:
+            FilesystemId: !Ref FileSystemResource
+            AuthorizationConfig:
+              IAM: ENABLED
+              AccessPointId: !Ref AccessPointResource
+            TransitEncryption: ENABLED
+            RootDirectory: "/"
+
+  FileSystemResource:
+    Type: 'AWS::EFS::FileSystem'
+    Properties:
+      PerformanceMode: generalPurpose
+      Encrypted: true
+      FileSystemTags:
+        - Key: Name
+          Value: TestFileSystem
+      FileSystemPolicy:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Action:
+              - "elasticfilesystem:*"
+            Principal:
+              AWS: "*"
+
+  MountTargetResource:
+    Type: AWS::EFS::MountTarget
+    Properties:
+      FileSystemId: !Ref FileSystemResource
+      SubnetId: !Ref SubnetID
+      SecurityGroups: !Ref SecurityGroupIDs
+   
+  AccessPointResource:
+    Type: 'AWS::EFS::AccessPoint'
+    Properties:
+      FileSystemId: !Ref FileSystemResource
+      PosixUser:
+        Uid: "1000"
+        Gid: "1000"
+      RootDirectory:
+        CreationInfo:
+          OwnerGid: "1000"
+          OwnerUid: "1000"
+          Permissions: "0777"
+        Path: "/myefs"
+
+Outputs:
+  MyTaskDefinition:
+    Value: !Ref MyTaskDefinition
+  LogGroupName:
+    Value: !Ref LogGroup
+  LogGroupArn:
+    Value: !GetAtt LogGroup.Arn
