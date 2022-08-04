@@ -52,7 +52,9 @@ ECR Repo
 
 Task Output in CloudWatch Logs
 
-![](https://www.evernote.com/l/AAFa6qRxOTREm5tAgUb5Y1SyYXhMHZLN28wB/image.png)
+> output from two individual task runs.  each creates a .txt file.  you can see two to confirm persistence.
+
+![](https://www.evernote.com/l/AAHMQ4II_XtB0YeIfo7fMkShxX6K3tmG5J8B/image.png)
 
 
 ## Resources
