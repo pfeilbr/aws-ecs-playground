@@ -1,0 +1,144 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  ecs-on-ec2-with-bottlerocket-example
+
+Parameters:
+
+  VpcId:
+    Type: String
+    Default: vpc-2708bf40
+
+  SubnetID:
+    Description: The subnet id
+    Type: AWS::EC2::Subnet::Id   
+    Default: subnet-058724041d8b0811a
+
+  SecurityGroupIDs:
+    Description: The array of security group ids
+    Type: List<AWS::EC2::SecurityGroup::Id>    
+    Default: sg-90433feb
+
+  ImageID:
+      Description: 'Bottlerocket `aws-ecs-1` variant image id'
+      Type: AWS::EC2::Image::Id
+      Default: 'ami-0594f792aa631c053'
+
+  InstanceType:
+    Type: String
+    Default: m5.xlarge
+    Description: 'Instance type for the instances'
+
+Globals:
+  Function:
+    Timeout: 60
+
+Resources:
+
+  MyRepository: 
+    Type: AWS::ECR::Repository
+    Properties: 
+      RepositoryName: "my-nodejs-task"
+
+  ECSCluster:
+    Type: 'AWS::ECS::Cluster'
+    Properties:
+      ClusterName: !Sub '${AWS::StackName}'
+
+  EcsInstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Description: 'Role for Bottlerocket container instances'
+      Path: !Sub '/bottlerocket/ecs-updater-integ/${AWS::StackName}/'
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: 'ec2.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role'
+        - 'arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore'
+
+  EcsInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      InstanceProfileName: !Ref EcsInstanceRole
+      Path: !Sub '/bottlerocket/ecs-updater-integ/${AWS::StackName}/'
+      Roles:
+        - !Ref EcsInstanceRole
+
+  LaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateData:
+        IamInstanceProfile:
+          Name: !Ref  EcsInstanceProfile
+        ImageId: !Ref ImageID
+        InstanceType: !Ref InstanceType
+        SecurityGroupIds: !Ref SecurityGroupIDs
+        TagSpecifications:
+          - ResourceType: instance
+            Tags:
+              - Key: "Name"
+                Value: !Sub "${AWS::StackName}-instance"
+        UserData:
+          Fn::Base64:
+            !Sub |
+              [settings.ecs]
+              cluster = "${AWS::StackName}"
+
+#   LogGroup:
+#     Type: AWS::Logs::LogGroup
+
+#   EcsTaskExecutionRole:
+#     Type: AWS::IAM::Role
+#     Properties:
+#       AssumeRolePolicyDocument:
+#         Statement:
+#           - Effect: Allow
+#             Principal:
+#               Service: ecs-tasks.amazonaws.com
+#             Action: sts:AssumeRole
+#       ManagedPolicyArns:
+#         - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+#       Policies:
+#         - PolicyName: !Sub 'EcsTaskExecutionRole-${AWS::StackName}'
+#           PolicyDocument:
+#             Version: 2012-10-17
+#             Statement:
+#               - Effect: Allow
+#                 Action:
+#                   - ecr:DescribeRepositories
+#                 Resource: !Sub "arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/*"
+
+#   MyTaskDefinition:
+#     Type: AWS::ECS::TaskDefinition
+#     Properties:
+#       RequiresCompatibilities:
+#         - "FARGATE"
+#       ExecutionRoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/ecsTaskExecutionRole"
+#       Cpu: 256
+#       Memory: 512
+#       NetworkMode: "awsvpc"
+#       TaskRoleArn: !Ref EcsTaskExecutionRole
+#       ContainerDefinitions:
+#         - Name: "my-nodejs-task"
+#           Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/my-nodejs-task:latest"
+#           MemoryReservation: 256
+#           Memory: 512
+#           LogConfiguration:
+#             LogDriver: awslogs
+#             Options:
+#               awslogs-region: !Ref AWS::Region
+#               awslogs-group: !Ref LogGroup
+#               awslogs-stream-prefix: ecs                 
+#           PortMappings:
+#             - ContainerPort: 80
+#               Protocol: tcp
+
+# Outputs:
+#   MyTaskDefinition:
+#     Value: !Ref MyTaskDefinition
