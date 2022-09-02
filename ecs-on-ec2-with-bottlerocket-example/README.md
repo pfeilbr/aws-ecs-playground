@@ -50,6 +50,10 @@ aws logs tail "ecs-fargate-task-example-LogGroup-PC3x4F18qpuO"
 sam delete --no-prompts
 ```
 
+## Screenshots
+
+![](https://www.evernote.com/l/AAHEKIStGH1CHJD3ciFlZnjgNEmexaGPtv8B/image.png)
+
 ## Resources
 
 - [Using a Bottlerocket AMI with Amazon ECS (bottlerocket/QUICKSTART-ECS.md)](https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART-ECS.md)

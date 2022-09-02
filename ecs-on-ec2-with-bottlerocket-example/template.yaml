@@ -12,7 +12,7 @@ Parameters:
   SubnetID:
     Description: The subnet id
     Type: AWS::EC2::Subnet::Id   
-    Default: subnet-058724041d8b0811a
+    Default: subnet-4700526d
 
   SecurityGroupIDs:
     Description: The array of security group ids
@@ -26,7 +26,7 @@ Parameters:
 
   InstanceType:
     Type: String
-    Default: m5.xlarge
+    Default: m5.large
     Description: 'Instance type for the instances'
 
 Globals:
@@ -89,6 +89,20 @@ Resources:
             !Sub |
               [settings.ecs]
               cluster = "${AWS::StackName}"
+              
+              [settings.host-containers.admin]
+              enabled = true
+
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      SubnetId: !Ref SubnetID
+      KeyName: brianpfeil
+      LaunchTemplate:
+        LaunchTemplateId: !Ref LaunchTemplate
+        Version: 1
+    DependsOn:
+      - ECSCluster
 
 #   LogGroup:
 #     Type: AWS::Logs::LogGroup
