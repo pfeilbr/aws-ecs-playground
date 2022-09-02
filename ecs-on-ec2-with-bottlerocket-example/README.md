@@ -31,20 +31,15 @@ aws ecr get-login-password --region "${region}" | docker login --username AWS --
 docker tag "${image_name}" "${image_tag}"
 docker push "${image_tag}"
 
-
-# login to bastion host
-dev01 start wait
-dev01 sssh
-
 # run task
 aws ecs run-task \
-    --cluster MyFargateTaskCluster \
-    --task-definition ecs-fargate-task-example-MyTaskDefinition-f7oCUqciAA2V:1 \
-    --launch-type "FARGATE" \
-    --network-configuration "awsvpcConfiguration={subnets=[subnet-058724041d8b0811a],securityGroups=[sg-90433feb]}"
+    --cluster "ecs-on-ec2-with-bottlerocket-example" \
+    --task-definition ecs-on-ec2-with-bottlerocket-example-MyTaskDefinition-Ij0ai7S70vn0:1 \
+    --launch-type "EC2" \
+    --network-configuration "awsvpcConfiguration={subnets=[subnet-4700526d],securityGroups=[sg-90433feb]}"
 
 # view task output in CloudWatch logs
-aws logs tail "ecs-fargate-task-example-LogGroup-PC3x4F18qpuO"
+aws logs tail "ecs-on-ec2-with-bottlerocket-example-LogGroup-DCBCbsNhcIcF" --follow
 
 # delete stack
 sam delete --no-prompts
@@ -53,6 +48,8 @@ sam delete --no-prompts
 ## Screenshots
 
 ![](https://www.evernote.com/l/AAHEKIStGH1CHJD3ciFlZnjgNEmexaGPtv8B/image.png)
+
+![](https://www.evernote.com/l/AAH90PqTfDdKqIzMSMMvHDilg_vR-vjoPG4B/image.png)
 
 ## Resources
 

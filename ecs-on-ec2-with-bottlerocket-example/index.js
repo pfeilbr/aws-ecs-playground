@@ -3,7 +3,7 @@ var AWS = require("aws-sdk");
 
 (async () => {
 
-    console.log('hello from ecs-fargate-task-example\n\n')
+    console.log('hello from ecs-on-ec2-with-bottlerocket-example\n\n')
 
     // access public internet
     const resp = await axios.get('https://postman-echo.com/get')
